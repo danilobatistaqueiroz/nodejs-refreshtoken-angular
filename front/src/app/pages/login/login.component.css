@@ -1,0 +1,19 @@
+h5 {
+  border-bottom: 1px solid #a8a8a8; padding-bottom: 5px;
+}
+
+img {
+  display:block;margin:auto;
+}
+
+form {
+  margin-top:10px;
+}
+
+.options {
+  margin-top:20px;
+}
+p {
+  margin-top:0px;
+  margin-bottom:0px;
+}

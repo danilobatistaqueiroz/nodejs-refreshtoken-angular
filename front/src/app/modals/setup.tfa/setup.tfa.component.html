@@ -1,0 +1,20 @@
+<div class="modal-header">
+  <h4 class="modal-title" id="modal-basic-title">Profile update</h4>
+  <i id="close" class="fa fa-close" style="font-size:24px" (click)="modalDismiss('Cross click')"></i>
+</div>
+<div class="modal-body">
+  <div class="container">
+    <div class="card card-container">
+      <h5>Two Factor</h5>
+      <button class="btn btn-lg btn-danger btn-block btn-signin" (click)="disableTfa()">Disable TFA</button>
+      <button class="btn btn-lg btn-primary btn-block btn-signin" (click)="enableTfa()">Enable TFA</button>
+    </div>
+  </div>
+</div>
+
+<hr *ngIf="showToast" />
+<ngb-toast *ngIf="showToast" header="Two Factor Authentication" [delay]="2000" [autohide]="autohideToast"
+  (mouseenter)="autohideToast = false" (mouseleave)="autohideToast = true" (hidden)="closeToast()"
+  (hide)="showToast = false; autohideToast = true" class="bg-success text-light">
+  <div>Two factor {{textTitleToast}} with success!</div>
+</ngb-toast>
