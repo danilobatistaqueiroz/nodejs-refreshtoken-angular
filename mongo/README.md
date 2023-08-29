@@ -1,7 +1,7 @@
 sudo service docker start
 docker-compose up
 
-danilo e MongoExpress2023 usuário e senha para mongo-express
+danilo e mongoexpress usuário e senha para mongo-express
 
 root e MongoDB2023 usuário e senha para mongoDB
 

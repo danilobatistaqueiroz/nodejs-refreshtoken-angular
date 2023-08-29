@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoginServiceService } from '../../services/login-service/login-service.service';
+import { LoginService } from '../../services/login.service';
 import { Router } from '@angular/router';
 import { ModalDismissReasons, NgbDatepickerModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { SetupTfaComponent } from '../../modals/setup.tfa/setup.tfa.component';
@@ -15,7 +15,7 @@ export class HeaderComponent implements OnInit {
 
   closeResult = '';
 
-  constructor(private loginService: LoginServiceService, 
+  constructor(private loginService: LoginService, 
     private modalService: NgbModal,
     private router: Router, ) {
     this.loginService.authSub.subscribe((data) => {

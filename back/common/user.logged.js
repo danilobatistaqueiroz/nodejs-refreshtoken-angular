@@ -10,7 +10,7 @@ async function getUserLogged(req) {
   try{
     verify = await jwt.verify(token, process.env.SECRET_KEY);
   } catch (err) {
-    console.error(err);
+    console.error(err.stack);
     if(err instanceof jwt.TokenExpiredError)
       return null;
     return null;
@@ -19,7 +19,7 @@ async function getUserLogged(req) {
   try{
     user = await User.findById(verify.id);
   } catch (err) {
-    console.error(err);
+    console.error(err.stack);
     return null;
   }
   return user;

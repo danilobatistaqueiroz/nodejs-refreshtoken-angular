@@ -5,6 +5,9 @@
 
     <form class="form-signin" (ngSubmit)="registerUser()" [formGroup]="registerForm">
 
+      <input type="text" id="name" class="form-control" name="name" autocomplete="off"
+        formControlName="name" placeholder="Name" title="Please enter your user name" required autofocus>
+
       <input type="text" id="email" class="form-control" name="email" placeholder="Email" (focus)="clearErrors()"
         title="Please enter the email" autocomplete="off" formControlName="email" required autofocus>
 
@@ -58,10 +61,4 @@
   </div>
 </div>
 
-<hr *ngIf="showToast" />
-<ngb-toast *ngIf="showToast" header="Registration with success" [delay]="10000" [autohide]="autohideToast"
-  (mouseenter)="autohideToast = false" (mouseleave)="autohideToast = true"
-  (hidden)="closeToast()"
-  (hide)="showToast = false; autohideToast = true" class="bg-success text-light">
-  <div>You need to confirm your account, got to your email box.</div>
-</ngb-toast>
+<app-messages></app-messages>

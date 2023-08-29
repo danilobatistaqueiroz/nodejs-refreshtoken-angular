@@ -1,27 +1,21 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const cookieParser = require("cookie-parser");
 const https = require("https");
 const fs = require("fs");
+require("express-async-errors");
 
 dotenv.config({path:"./config.env"}); 
 
-require("./conn");
-
-const login = require("./routes/login");
-const register = require("./routes/register");
-const tfa = require("./routes/tfa");
-const user = require("./routes/user");
-const admin = require("./routes/admin");
+require("./db-conn");
 
 app.use(cors({
   origin: process.env.CLIENT_URL,
   methods: ["GET","HEAD","PUT","PATCH","POST","DELETE"],
   preflightContinue: true,
-  allowedHeaders: ["Content-Type", "Authorization"],
+  allowedHeaders: ["Content-Type", "Authorization", 'x-tfa'],
   redirect: "follow",
   headers: {
     "Content-Type": "application/json",
@@ -29,6 +23,19 @@ app.use(cors({
   withCredentials: true,
   credentials: true 
 }));
+
+app.use(express.json());
+app.use(cookieParser())
+
+const logger = require('./common/logger');
+
+const routes = require("./routes");
+app.use(routes);
+app.use((err, req, res, next) => {
+  var stack = err.stack
+  logger.error(String(stack));
+  res.status(500).json({message:"Something's gone wrong!"});
+});
 
 if(process.env.USE_HTTPS==="true"){
   https.createServer(
@@ -38,22 +45,10 @@ if(process.env.USE_HTTPS==="true"){
       },
       app
     ).listen(process.env.PORT, () => {
-      console.log(`The server started running on https://localhost:${process.env.PORT}`);
+      logger.info(`The server started running on https://localhost:${process.env.PORT}`);
   });
 } else {
   app.listen(process.env.PORT, () => {
-    console.log(`The server started running on http://localhost:${process.env.PORT}`);
+    logger.info(`The server started running on http://localhost:${process.env.PORT}`);
   });
 }
-
-app.use(bodyParser.json());
-app.use(cookieParser())
-
-app.use(login);
-app.use(register);
-app.use(tfa);
-app.use(user);
-app.use(admin);
-app.use((error, req, res, next) => {
-  res.status(500).json({ error: error.message });
-});

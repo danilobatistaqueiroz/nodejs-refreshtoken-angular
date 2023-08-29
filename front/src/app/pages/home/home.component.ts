@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LoginServiceService } from '../../services/login-service/login-service.service';
+import { LoginService } from '../../services/login.service';
 import { User } from '../../models/user';
 
 @Component({
@@ -11,7 +11,7 @@ export class HomeComponent implements OnInit {
 
   user:User|null=null;
 
-  constructor(private loginService: LoginServiceService) {
+  constructor(private loginService: LoginService) {
   }
 
   ngOnInit() {

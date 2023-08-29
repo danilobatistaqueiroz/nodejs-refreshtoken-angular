@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { LoginServiceService } from '../../services/login-service/login-service.service';
-import { RegisterResponse } from '../../models/register.response';
+import { LoginService } from '../../services/login.service';
+import { GenericResponse } from '../../models/generic.response';
 import { Login } from '../../models/login';
+import { ToastService } from 'src/app/services/toast.service';
 
 @Component({
   selector: 'app-register',
@@ -17,15 +18,17 @@ export class RegisterComponent implements OnInit {
 
   errorMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private loginService: LoginServiceService, private router: Router) { }
+  constructor(private fb: FormBuilder, private loginService: LoginService, private router: Router, private toastService: ToastService) { }
 
-  registerForm: FormGroup = this.fb.group(new Login('', '', '', '', false));
+  registerForm: FormGroup = this.fb.group(new Login('', '', '', '', '', false));
 
   ngOnInit() {
+    this.registerForm.controls['name'].addValidators([Validators.required, Validators.minLength(3), Validators.maxLength(8)]);
     this.registerForm.controls['email'].addValidators([Validators.email, Validators.required, Validators.minLength(7)]);
     this.registerForm.controls['password'].addValidators([Validators.required, Validators.minLength(8)]);
     this.registerForm.controls['tfa'].addValidators([Validators.required]);
-    this.registerForm.controls['email'].setValue('bengue@gmail.com');
+    this.registerForm.controls['name'].setValue('zorro');
+    this.registerForm.controls['email'].setValue('zorro@gmail.com');
     this.registerForm.controls['password'].setValue('11111111');
     this.registerForm.controls['confirmpass'].setValue('11111111');
   }
@@ -53,10 +56,12 @@ export class RegisterComponent implements OnInit {
         next: (data) => {
           if (data == null || data.body == null)
             return;
-          const result: RegisterResponse = (data.body as RegisterResponse)
+          const result: GenericResponse = (data.body as GenericResponse)
           this.errorMessage = result.message;
           if (data.status === 200) {
-            this.showToast = true;
+            //this.showToast = true;
+            console.log('toast');
+            this.toastService.show("You need to confirm your account, got to your email box.", { classname: 'bg-success' , style: {'min-width':'280px'}});
           }
         },
         error: (err) => {

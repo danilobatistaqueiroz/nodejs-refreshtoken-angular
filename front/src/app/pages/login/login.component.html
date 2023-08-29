@@ -16,7 +16,7 @@
         [disabled]="!loginForm.valid">Sign in</button>
 
       <div class="options">
-        <p><a [routerLink]="['/remember-password']">Forgot the password?</a></p>
+        <p><button class="btn btn-link" (click)="passwordReset();false">Forgot the password?</button></p>
         <p><a [routerLink]="['/register']">Register here</a></p>
       </div>
 
@@ -45,3 +45,6 @@
     </div>
   </div>
 </div>
+
+
+<app-messages></app-messages>

@@ -1,5 +1,9 @@
 {
   "events": {
     "start": "clear"
-  }
+  },
+  "ignore": [
+    "*.log",
+    "logs/*"
+  ]
 }

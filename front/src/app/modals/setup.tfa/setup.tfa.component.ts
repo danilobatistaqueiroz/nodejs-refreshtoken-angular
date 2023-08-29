@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { LoginServiceService } from 'src/app/services/login-service/login-service.service';
+import { LoginService } from 'src/app/services/login.service';
 import { CookieService } from 'ngx-cookie-service';
 import { Login } from '../../models/login';
 import { ModalDismissReasons, NgbDatepickerModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -21,7 +21,7 @@ export class SetupTfaComponent implements OnInit {
   authcode: string = "";
   errorMessage: string|null = null;
 
-  constructor(private loginService: LoginServiceService, private router: Router, private cookieService: CookieService, private modalService: NgbModal) {
+  constructor(private loginService: LoginService, private router: Router, private cookieService: CookieService, private modalService: NgbModal) {
   }
 
   ngOnInit() {

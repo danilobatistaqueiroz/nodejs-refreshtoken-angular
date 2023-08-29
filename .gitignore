@@ -46,3 +46,5 @@ mongo/volume/**
 
 .pnpm
 .angular
+
+*.log
