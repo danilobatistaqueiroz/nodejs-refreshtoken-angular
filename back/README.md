@@ -10,3 +10,5 @@ um cookie assinado usa um HMAC que é uma assinatura usando um hash (md5,sha1,sh
 https://geekflare.com/user-authentication-with-jwt-in-nodejs/
 
 
+Refresh Token:  
+https://www.bezkoder.com/jwt-refresh-token-node-js-mongodb/

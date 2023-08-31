@@ -4,11 +4,13 @@ import { RouterModule, Routes } from '@angular/router'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { NgbToastModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { AuthGuardGuard } from './guards/auth-guard.guard';
 import { LoginGuard } from './guards/login.guard';
+
+import { AuthInterceptor } from './helpers/auth.interceptor';
 
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './pages/header/header.component';
@@ -52,7 +54,10 @@ const routes: Routes = [
     HttpClientModule,
     NgbToastModule
   ],
-  providers: [CookieService,ToastService],
+  providers: [
+    CookieService,ToastService,
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
+  ],
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
   bootstrap: [AppComponent]
 })

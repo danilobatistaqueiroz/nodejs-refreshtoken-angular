@@ -37,6 +37,10 @@ export class LoginService {
     return this.http.post(`${environment.URL_API}/auth/register`, { name:login.name, email:login.email, password:login.password, tfa:login.tfa }, { observe:"response" });
   }
 
+  refreshToken() {
+    return this.http.post(`${environment.URL_API}/auth/refresh-token`, {}, { withCredentials:true, observe:"response" });
+  }
+
   generateTfa(email:string) {
     return this.http.post(`${environment.URL_API}/tfa`, {email:email}, { observe:'response' });
   }

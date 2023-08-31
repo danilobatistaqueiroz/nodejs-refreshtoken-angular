@@ -4,6 +4,7 @@ import { LoginService } from 'src/app/services/login.service';
 import { CookieService } from 'ngx-cookie-service';
 import { Login } from '../../models/login';
 import { ModalDismissReasons, NgbDatepickerModule, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastService } from 'src/app/services/toast.service';
 
 
 @Component({
@@ -13,22 +14,16 @@ import { ModalDismissReasons, NgbDatepickerModule, NgbModal } from '@ng-bootstra
 })
 export class SetupTfaComponent implements OnInit {
 
-  showToast = false;
-  autohideToast = true;
   textTitleToast = '';
 
   tfa: any = {};
   authcode: string = "";
   errorMessage: string|null = null;
 
-  constructor(private loginService: LoginService, private router: Router, private cookieService: CookieService, private modalService: NgbModal) {
+  constructor(private loginService: LoginService, private router: Router, private cookieService: CookieService, private modalService: NgbModal, private toastService: ToastService) {
   }
 
   ngOnInit() {
-  }
-
-  closeToast() {
-    setTimeout(() => (this.showToast = false), 1500);
   }
 
   modalDismiss(reason:any){
@@ -40,28 +35,42 @@ export class SetupTfaComponent implements OnInit {
   }
 
   enableTfa() {
-    this.loginService.enableLoginUsingTfa().subscribe((data) => {
-      const result = data.body
-      if (data.status === 200) {
-        this.textTitleToast="enabled";
-        this.showToast=true;
-        this.errorMessage = null;
-        this.tfa.secret = this.tfa.tempSecret;
-        this.tfa.tempSecret = "";
-        this.router.navigateByUrl('/home');
-      } else {
-        this.errorMessage = data.statusText;
+    this.loginService.enableLoginUsingTfa().subscribe({
+      next:(data) => {
+        const result = data.body
+        if (data.status === 200) {
+          this.textTitleToast="enabled";
+          this.toastService.show(`Two factor ${this.textTitleToast} with success!`, { classname: 'bg-success' });
+          this.errorMessage = null;
+          this.tfa.secret = this.tfa.tempSecret;
+          this.tfa.tempSecret = "";
+          this.router.navigateByUrl('/home');
+        } else {
+          this.errorMessage = data.statusText;
+        }
+      },
+      error:(err) => {
+        this.errorMessage = err || err.statusText;
+        this.toastService.show(err, { classname: 'bg-danger'});
+        console.error(err);
       }
     });
   }
 
   disableTfa() {
-    this.loginService.disableLoginUsingTfa().subscribe((data) => {
-      const result = data.body
-      if (data['status'] === 200) {
-        this.textTitleToast="disabled";
-        this.showToast=true;
-        this.authcode = "";
+    this.loginService.disableLoginUsingTfa().subscribe({
+      next:(data) => {
+        const result = data.body
+        if (data['status'] === 200) {
+          this.textTitleToast="disabled";
+          this.toastService.show(`Two factor ${this.textTitleToast} with success!`, { classname: 'bg-success' });
+          this.authcode = "";
+        }
+      },
+      error:(err) => {
+        this.errorMessage = err || err.statusText;
+        this.toastService.show(err, { classname: 'bg-danger'});
+        console.error(err);
       }
     });
   }

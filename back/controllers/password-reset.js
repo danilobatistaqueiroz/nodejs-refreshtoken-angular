@@ -10,11 +10,15 @@ const JWTSecret = process.env.JWT_SECRET;
 const bcryptSalt = process.env.BCRYPT_SALT;
 const clientURL = process.env.CLIENT_URL;
 
-async function passwordResetRequest(req){
+async function passwordResetRequest(req,res){
   console.log('passwordResetRequest');
-  const user = await User.findOne({email:req.body.email});
+  const email = req.body?.email;
+  if(!email){
+    return res.status(400).json({message:"You need to supply an email!"});
+  }
+  const user = await User.findOne({email:email});
   if (!user) {
-    return {status:404,message:"Email does not exist"};
+    return res.status(404).json({message:"Email does not exist!"});
   }
   
   let token = await Token.findOne({ userId: user._id });
@@ -35,20 +39,20 @@ async function passwordResetRequest(req){
 
   await sendPasswordResetRequest(user.name,user.email,link);
 
-  return {status:200,message:"Password reset requested with success!"};
+  return res.status(200).json({message:"Password reset requested with success!"});
 }
 
-async function passwordReset(req){
+async function passwordReset(req,res){
   const { userId, token, password } = req.body;
   console.log('userId',userId,'token',token,'password',password);
 
   let serverToken = await Token.findOne({userId: userId });
   if (!serverToken) {
-    return {status:403,message:"Invalid or expired token"};
+    return res.status(403).json({message:"Invalid or expired token"});
   }
   const isValid = await bcrypt.compare(token, serverToken.token);
   if (!isValid) {
-    return {status:403,message:"Invalid or expired token"};
+    return res.status(403).json({message:"Invalid or expired token"});
   }
   const hash = await bcrypt.hash(password, Number(bcryptSalt));
   await User.updateOne(
@@ -59,7 +63,7 @@ async function passwordReset(req){
   const user = await User.findById({ _id: userId });
   await sendPasswordReset(user.email);
   await serverToken.deleteOne();
-  return {status:200,message:"Password reset was successful"};
+  return res.status(200).json({message:"Password reset was successful"});
 }
 
 module.exports = {passwordResetRequest, passwordReset};

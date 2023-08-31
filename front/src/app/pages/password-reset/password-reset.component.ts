@@ -17,9 +17,6 @@ export class PasswordResetComponent implements OnInit {
   token: string = '';
   userId: string = '';
 
-  showToast = false;
-  autohideToast = true;
-
   errorMessage: string | null = null;
 
   constructor(private fb: FormBuilder, private route: ActivatedRoute, private passwordResetService: PasswordResetService, private toastService: ToastService) { }
@@ -71,10 +68,6 @@ export class PasswordResetComponent implements OnInit {
 
   clearErrors() {
     this.resetForm.setErrors(null);
-  }
-
-  closeToast() {
-    setTimeout(() => (this.showToast = false), 1500);
   }
 
 }

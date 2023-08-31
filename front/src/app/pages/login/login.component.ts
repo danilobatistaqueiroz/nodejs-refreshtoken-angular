@@ -102,7 +102,7 @@ export class LoginComponent implements OnInit {
       },
       error: (err)=>{
         console.error(err);
-        this.errorMessage = (err.error as any).message;
+        this.errorMessage = (err as any);
       },
       complete: ()=>{
         

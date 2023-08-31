@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 async function getUserLogged(req) {
   const { token } = req.cookies;
   if(!token){
-    return null;
+    return {status:401,message:"Invalid token! Please login!"};
   }
   let verify = null;
   try{
@@ -12,17 +12,20 @@ async function getUserLogged(req) {
   } catch (err) {
     console.error(err.stack);
     if(err instanceof jwt.TokenExpiredError)
-      return null;
-    return null;
+      return {status:401,message:"Token expired! Please login again!"};
+    return {status:401,message:"Invalid token! Please login!"};
   }
   let user;
   try{
     user = await User.findById(verify.id);
   } catch (err) {
-    console.error(err.stack);
-    return null;
+    console.error('getUserLogged',err.stack);
+    return {status:500,message:"Something's gone wrong!"};
   }
-  return user;
+  if(!user){
+    return {status:400,message:"User not found!"};
+  }
+  return {status:200,user:user};
 }
 
 module.exports = {getUserLogged};

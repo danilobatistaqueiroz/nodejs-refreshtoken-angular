@@ -5,7 +5,7 @@ const fs = require("fs");
 let cl = console.log
 console.log = function(...args){
   let d = new Date();
-  args.unshift('Info:');
+  args.unshift('INFO:');
   args.push('| '+d.toISOString());
   fs.appendFileSync("logs/console.log",args.join(' ')+'\n');
   cl.apply(console, args)
@@ -13,7 +13,7 @@ console.log = function(...args){
 let ce = console.error
 console.error = function(...args){
   let d = new Date();
-  args.unshift('Error:');
+  args.unshift('ERROR:');
   args.push('| '+d.toISOString());
   fs.appendFileSync("logs/console.log",args.join(' ')+'\n');
   args = args.map(a => a='\x1b[31m'+a+'\x1b[0m');
@@ -37,10 +37,11 @@ const logger = createLogger({
   exitOnError:false,
   level:"info", 
   format:combine(simple(),datetime),
+  handleExceptions:true,handleRejections:true,
   transports: [
     new transports.Console({format:combine(red)}),
     new transports.File({filename:"logs/info.log"}),
-    new transports.File({filename:"logs/error.log", level:"error", handleExceptions:true, handleRejections:true})
+    new transports.File({filename:"logs/error.log",level:"error"})
   ]
 });
 

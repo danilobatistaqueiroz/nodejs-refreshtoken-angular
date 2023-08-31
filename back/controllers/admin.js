@@ -1,6 +1,10 @@
 const Admin = require("../models/admin");
 
-async function getAdmins(email){
+async function getAdmins(req,res){
+  const email = req.query?.email;
+  if(!email){
+    return res.status(400).json({message:"You need to supply an email!"});
+  }
   try {
     let admin;
     if(email)
@@ -8,16 +12,16 @@ async function getAdmins(email){
     else
       admin = await Admin.find({});
     if (!admin) {
-      return { status:204, message: "No user found" };
+      return res.status(204).json({message:"No user found!"});
     }
-    return { status:200, admin: admin };
+    return res.status(200).json({admin: admin});
   } catch (err) {
-    console.error(err.stack);
-    return { status:500, message: "Something's gone wrong!" };
+    console.error('getAdmins',err.stack);
+    return res.status(500).json({message:"Something's gone wrong!"});
   }
 }
 
-async function saveAdmin(req){
+async function saveAdmin(req,res){
   const {email,enabled} = req.body;
   const result = await Admin.findOne({email:email});
   try{
@@ -28,10 +32,10 @@ async function saveAdmin(req){
         $set: {email:email,enabled:enabled==="true"}
       });
     }
-    return {status:200,message:"Admin updated with success!"};
+    return res.status(200).json({message:"Admin updated with success!"});
   } catch (err) {
-    console.error(err.stack);
-    return {status:400,message:"Something's gone wrong!"};
+    console.error('saveAdmin',err.stack);
+    return res.status(400).json({message:"Something's gone wrong!"});
   }
 };
 

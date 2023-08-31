@@ -23,7 +23,7 @@ async function send(email,subject,payload,template) {
       html: compiledTemplate(payload),
     }, (err, info) => {
       if (err) {
-        console.error(err.stack);
+        console.error('send',err.stack);
       } else {
         return res.status(200).json({
           success: true,
@@ -31,7 +31,7 @@ async function send(email,subject,payload,template) {
       }
     });
   } catch (err) {
-    console.error(err.stack);
+    console.error('send',err.stack);
   }
 }
 

@@ -11,7 +11,7 @@ const checkAuthenticated = async (req) => {
   try{
     verify = await jwt.verify(token, process.env.SECRET_KEY);
   } catch (err) {
-    console.error(err.stack);
+    console.error('checkAuthenticated',err.stack);
     if(err instanceof jwt.TokenExpiredError) {
       return {success:false,message:"Token Expired! Please login again!",status:401};
     }
@@ -45,7 +45,7 @@ const isUserAuthenticated = async (req, res, next) => {
     req.user=result.user;
     return next();
   } catch (err) {
-    console.error(err.stack);
+    console.error('isUserAuthenticated',err.stack);
     return res.status(500).send("Something's gone wrong!");
   }
 }
@@ -63,7 +63,7 @@ const isAdminAuthenticated = async (req, res, next) => {
     }
     next();
   } catch (err) {
-    console.error(err.stack);
+    console.error('isAdminAuthenticated',err.stack);
     return res.status(500).send("Something's gone wrong!");
   }
 }

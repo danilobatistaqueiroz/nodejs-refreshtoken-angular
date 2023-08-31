@@ -5,7 +5,7 @@ class="text-light"
 [autohide]="true"
 [delay]="4000"
 (hidden)="toastService.remove(toast)"
-[ngStyle]="toast.style"
+[ngStyle]="toast.style??{'min-width':'280px'}"
 (click)="toastService.remove(toast)"
 >
 <div>

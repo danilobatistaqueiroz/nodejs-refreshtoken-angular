@@ -12,9 +12,4 @@
   </div>
 </div>
 
-<hr *ngIf="showToast" />
-<ngb-toast *ngIf="showToast" header="Two Factor Authentication" [delay]="2000" [autohide]="autohideToast"
-  (mouseenter)="autohideToast = false" (mouseleave)="autohideToast = true" (hidden)="closeToast()"
-  (hide)="showToast = false; autohideToast = true" class="bg-success text-light">
-  <div>Two factor {{textTitleToast}} with success!</div>
-</ngb-toast>
+<app-messages></app-messages>

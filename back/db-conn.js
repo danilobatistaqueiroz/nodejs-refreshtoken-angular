@@ -12,5 +12,5 @@ mongoose.connect(process.env.MONGO_URI,
       console.log(`Database connected to ${data.connection.host}`)
 })
   .catch((err) => {
-    console.error(err.stack);
+    console.error('connect',err.stack);
 });

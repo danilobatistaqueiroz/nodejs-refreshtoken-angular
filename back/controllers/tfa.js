@@ -1,21 +1,30 @@
 const speakeasy = require("speakeasy");
 const QRCode = require("qrcode");
 const TFA = require("../models/tfa");
-const User = require("../models/user");
 const { getUserLogged } = require("../common/user.logged");
 
-async function enableLoginUsingTfa(req,enabled){
-  let user = await getUserLogged(req);
-  if(!user){
-    return {status:404,message:"User not found!"};
-  }
-  user.tfa={enabled:enabled};
-  user.save();
-  return {status:200,message:"Two factor authentication enabled with success!"};
+async function enableLoginUsingTfa(req,res){
+  enableUserTfa(req,res,true);
+}
+async function disableLoginUsingTfa(req,res){
+  enableUserTfa(req,res,false);
 }
 
-async function generateTfa(req){
-  let email = req.body.email;
+async function enableUserTfa(req,res,enabled){
+  let result = await getUserLogged(req);
+  if(result.status!=200){
+    return res.status(result.status).json({message:result.message});
+  }
+  result.user.tfa={enabled:enabled};
+  result.user.save();
+  return res.status(200).json({message:"Two factor authentication enabled with success!"});
+}
+
+async function generateTfa(req,res){
+  let email = req.body?.email;
+  if(!email){
+    return res.status(400).json({message:"You need to supply an email!"});
+  }
   const secret = speakeasy.generateSecret({
     length: 10,
     name: email,
@@ -27,9 +36,9 @@ async function generateTfa(req){
       issuer: "Labs Corp",
       encoding: "base32"
   });
-  let tfa = await getTfa(email);
+  let tfa = await TFA.findOne({email:email});
   if(!tfa){
-    return {status:400,body:{message:"Two phase authentication isn't working on this user!"}};
+    tfa = new TFA({email:email});
   }
   const dataURL = await QRCode.toDataURL(secret.otpauth_url);
   tfa.secret = "";
@@ -37,29 +46,18 @@ async function generateTfa(req){
   tfa.dataURL = dataURL;
   tfa.tfaURL = url;
   tfa.save();
-  return {
-      status:200,
-      body:{
-        message: "TFA Auth needs to be verified",
+  return res.status(200).json({
+        message: "TFA Auth needs to be verified!",
         tempSecret: secret.base32,
         dataURL,
         tfaURL: secret.otpauth_url
-      }
-  };
-
+      });
 }
 
 async function verifyTfa(email,authcode){
-  if(!authcode) {
-    return {status:400,message:"You need to inform the auth code!"}
-  }
-  let user = await User.findOne({email:email});
-  if(!user){
-    return {status:404,message:"User doesn't exists!"};
-  }
-  let tfa = await getTfa(email);
+  let tfa = await TFA.findOne({email:email});
   if(!tfa){
-    return {status:400,message:"Two phase authentication isn't configured on this user!"};
+    tfa = new TFA({email:email});
   }
   let isVerified = speakeasy.totp.verify({
     secret: tfa.tempSecret, //secret criado com generateSecret, ao ativar o Two Factor, secret baseado no email e issuer Danilo
@@ -69,24 +67,23 @@ async function verifyTfa(email,authcode){
   if (isVerified) {
     tfa.secret = tfa.tempSecret;
     tfa.save();
-    return {status:200,message:"Two-Factor-Auth is enabled successfully"};
-  }
-  return {status:403,message:"Invalid auth code, verification failed. Please verify the system Date and Time"};
-}
-
-
-async function getTfa(email) {
-  let tfa;
-  try{
-    tfa = await TFA.findOne({email:email});
-    if(!tfa){
-      tfa = new TFA({email:email});
-    }
-    return tfa;
-  } catch (err) {
-    console.error(err.stack);
-    return null;
+    return {success:true};
+  } else {
+    return {success:false,message:"Invalid auth code, verification failed. Please verify the system Date and Time"};
   }
 }
 
-module.exports = {generateTfa,getTfa,verifyTfa,enableLoginUsingTfa};
+async function getTfa(req,res){
+  const email = req.query?.email;
+  if(!email){
+    return res.status(400).json({message:"You need to supply an email!"});
+  }
+  let tfa = await TFA.findOne({email:email});
+  if(!tfa){
+    tfa = new TFA({email:email});
+  }
+  return res.status(200).json({tfa:tfa});
+}
+
+
+module.exports = {generateTfa,verifyTfa,getTfa,enableLoginUsingTfa,disableLoginUsingTfa};

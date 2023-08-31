@@ -13,8 +13,6 @@ import { ToastService } from 'src/app/services/toast.service';
 })
 export class RegisterComponent implements OnInit {
 
-  showToast = false;
-  autohideToast = true;
 
   errorMessage: string | null = null;
 
@@ -31,10 +29,6 @@ export class RegisterComponent implements OnInit {
     this.registerForm.controls['email'].setValue('zorro@gmail.com');
     this.registerForm.controls['password'].setValue('11111111');
     this.registerForm.controls['confirmpass'].setValue('11111111');
-  }
-
-  closeToast() {
-    setTimeout(() => (this.showToast = false), 1500);
   }
 
   validateUserPassword(): boolean {
@@ -59,9 +53,7 @@ export class RegisterComponent implements OnInit {
           const result: GenericResponse = (data.body as GenericResponse)
           this.errorMessage = result.message;
           if (data.status === 200) {
-            //this.showToast = true;
-            console.log('toast');
-            this.toastService.show("You need to confirm your account, got to your email box.", { classname: 'bg-success' , style: {'min-width':'280px'}});
+             this.toastService.show("You need to confirm your account, got to your email box.", { classname: 'bg-success' });
           }
         },
         error: (err) => {

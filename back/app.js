@@ -32,7 +32,7 @@ const logger = require('./common/logger');
 const routes = require("./routes");
 app.use(routes);
 app.use((err, req, res, next) => {
-  var stack = err.stack
+  var stack = err.stack;
   logger.error(String(stack));
   res.status(500).json({message:"Something's gone wrong!"});
 });
@@ -45,10 +45,12 @@ if(process.env.USE_HTTPS==="true"){
       },
       app
     ).listen(process.env.PORT, () => {
+      console.log('ok1');
       logger.info(`The server started running on https://localhost:${process.env.PORT}`);
   });
 } else {
   app.listen(process.env.PORT, () => {
+    console.log('ok2');
     logger.info(`The server started running on http://localhost:${process.env.PORT}`);
   });
 }
